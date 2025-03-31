@@ -1,5 +1,10 @@
 ### Como instalar o MinIO com GitOps
 
+## Baixar e atualizar o HELM com o MinIO
+```powershell
+helm repo add minio-operator https://operator.min.io
+```
+
 ## Baixar o values para personalização
 ```powershell
 helm show values minio-operator/operator > minio-operator-values.yaml
