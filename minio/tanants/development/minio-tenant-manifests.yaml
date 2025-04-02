@@ -1,0 +1,85 @@
+---
+# Source: tenant/templates/tenant-configuration.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: myminio-env-configuration
+type: Opaque
+stringData:
+  config.env: |-
+    export MINIO_ROOT_USER="minio"
+    export MINIO_ROOT_PASSWORD="minio123"
+---
+# Source: tenant/templates/console-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-tanant-dev-console
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: minio-console.local
+      http:
+        paths:
+          - path: /minio-dev/
+            pathType: Prefix
+            backend:
+              service:
+                name: minio-tanant-dev-console
+                port:
+                  name: https-console
+---
+# Source: tenant/templates/tenant.yaml
+apiVersion: minio.min.io/v2
+kind: Tenant
+metadata:
+  name: minio-tanant-dev
+  ## Optionally pass labels to be applied to the statefulset pods
+  labels:
+    app: minio
+spec:
+  image: "quay.io/minio/minio:RELEASE.2025-03-12T18-04-18Z"
+  imagePullPolicy: IfNotPresent
+  ## Secret with default environment variable configurations
+  configuration:
+    name: myminio-env-configuration
+  poolsMetadata:
+    annotations: {}
+    labels: {}
+  pools:
+    - servers: 4
+      name: pool-0
+      volumesPerServer: 4
+      volumeClaimTemplate:
+        metadata:
+          name: data
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      containerSecurityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+  mountPath: /export
+  subPath: /data
+  requestAutoCert: true
+  features:
+    bucketDNS: false
+    enableSFTP: false
+  podManagementPolicy: Parallel
+  prometheusOperator: false
