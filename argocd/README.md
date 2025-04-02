@@ -21,7 +21,9 @@ helm template argocd argo/argo-cd --namespace argocd -f values.yaml > argocd.yam
 
 ## Aplicar
 ```powershell
-kubectl apply -f ./argocd/
+kubectl apply -f ./argocd/namespace.yaml
+kubectl apply -f ./argocd/argocd.yaml
+
 ```
 
 ## PortFoward, enquanto não instalado o Ingress

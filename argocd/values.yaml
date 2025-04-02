@@ -330,6 +330,13 @@ configs:
     # If false, it is expected the configmap will be created by something else.
     # Argo CD will not work if there is no configmap created with the name above.
     create: true
+    clusterRole:
+      create: true  # Cria o ClusterRole se não existir
+      name: argocd-cluster-role
+    clusterRoleBinding:
+      create: true  # Cria o ClusterRoleBinding
+      name: argocd-cluster-role-binding
+      serviceAccountName: argocd-server
 
     # -- Annotations to be added to argocd-rbac-cm configmap
     annotations: {}
