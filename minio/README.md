@@ -1,32 +1,29 @@
-### Como instalar o MinIO com GitOps
+### Organização do MinIO
 
-## Baixar e atualizar o HELM com o MinIO
-```powershell
-helm repo add minio-operator https://operator.min.io
-```
-
-## Baixar o values para personalização
-```powershell
-helm show values minio-operator/operator > minio-operator-values.yaml
-```
-
-# Documentação dos values possíveis:
-https://min.io/docs/minio/kubernetes/upstream/reference/operator-chart-values.html#minio-operator-chart-values
-
-## Baixar o template atualizado com os valores personalizados
-- Em um arquivo único:
-```powershell
-helm template \
-  --namespace minio-operator \
-  operator minio-operator/operator \
-  -f minio-operator-values.yaml > minio-operator-manifests.yaml
-```
-
-- Em arquivos múltiplos
-```powershell
-helm template \
-  --namespace minio-operator \
-  operator minio-operator/operator \
-  -f minio-operator-values.yaml \
-  --output-dir minio-operator-templates
+```plaintext
+├── minio/
+│   ├── operator/
+│   │   ├── minio-operator-manifests.yaml
+│   │   ├── minio-operator-values.yaml
+│   │   ├── namespace.yaml
+│   ├── tanants/
+│   │   ├── development/
+│   │   │   ├── minio-tenant-values.yaml
+│   │   │   ├── minio-tenant-manifests.yaml
+│   │   │   ├── ingress.yaml
+│   │   ├── staging/
+│   │   │   ├── minio-tenant-values.yaml
+│   │   │   ├── minio-tenant-manifests.yaml
+│   │   │   ├── ingress.yaml
+│   │   ├── production/
+│   │   │   ├── minio-tenant-values.yaml
+│   │   │   ├── minio-tenant-manifests.yaml
+│   │   │   ├── ingress.yaml
+│   ├── argocd-applications/     # PASTA PARA REFERENCIAR OS ARQUIVOS MANIFEST PARA APLICAÇÃO - INTEGRAÇÃO ARGOCD
+│   │   ├── minio-operator.yaml
+│   │   ├── minio-tenant-dev.yaml
+│   │   ├── minio-tenant-staging.yaml
+│   │   ├── minio-tenant-prod-finance.yaml
+│   │   ├── minio-tenant-prod-auth.yaml
+│   │   ├── minio-tenant-prod-analytics.yaml
 ```
